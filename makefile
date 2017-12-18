@@ -14,11 +14,12 @@ all: $(EXEC)
 main : $(OBJS)
 	$(CPP) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-%.o : %.c
+$(OBJET)/%.o : $(SOURCE)/%.c
 	$(CPP) $(CFLAGS) -o $@ -c $<
 
 clean:
 	rm -fr *.o
+	rm -f obj/*.o
 
 cleaner: clean
 	rm -fr ${EXEC}
