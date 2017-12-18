@@ -1,16 +1,24 @@
-CC = gcc
-CFLAGS = -Wall -I include
-LDFLAGS = -L lib -lmingw32 -lSDL2main -lSDL2 -mwindows
+CPP=gcc
+CFLAGS= -Wall
+LDFLAGS= -lSDLmain -lSDL
+EXEC= main
+SOURCE = src
+OBJET = obj
 
-main : main.o
-	$(CC) main.o -o main $(LDFLAGS)
-
-main.o : src/main.c
-	$(CC) $(CFLAGS) -c src/main.c -o main.o
+SRC = $(wildcard $(SOURCE)/*.c)
+OBJS = $(patsubst $(SOURCE)%.c,$(OBJET)%.o, $(SRC))
 
 
-clean :
-	del -rf *.o
+all: $(EXEC)
 
-mrproper : clean
-	del Programme
+main : $(OBJS)
+	$(CPP) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+%.o : %.c
+	$(CPP) $(CFLAGS) -o $@ -c $<
+
+clean:
+	rm -fr *.o
+
+cleaner: clean
+	rm -fr ${EXEC}

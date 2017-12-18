@@ -1,23 +1,39 @@
+#include <stdlib.h>
 #include <stdio.h>
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
-int main(int argc, char* argv[])
+void pause()
 {
-    SDL_Window *window = NULL;
-    if(0 != SDL_Init(SDL_INIT_VIDEO))
+    int continuer = 1;
+    SDL_Event event;
+    while (continuer)
     {
-        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError());
-        return -1;
+        SDL_WaitEvent(&event);
+        switch(event.type)
+        {
+            case SDL_QUIT:
+                continuer = 0;
+        }
     }
-    window = SDL_CreateWindow("Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                              500, 500, SDL_WINDOW_SHOWN);
-    if(NULL == window)
-        fprintf(stderr, "Erreur de creation de la fenetre : %s\n", SDL_GetError());
-    else
+}
+
+
+int main(int argc, char *argv[])
+
+{
+    SDL_Init(SDL_INIT_VIDEO);
+    if (SDL_Init(SDL_INIT_VIDEO) == -1)
     {
-        SDL_Delay(11800);
-        SDL_DestroyWindow(window);
+        fprintf(stderr, "Erreur d'initialisation de la SDL");
+        exit(EXIT_FAILURE);
     }
+    SDL_WM_SetCaption("Mon projet intitial",NULL);
+    SDL_SetVideoMode(1020, 720, 32, SDL_HWSURFACE);
+
+
+    pause();
     SDL_Quit();
-    return 0;
+
+    return EXIT_SUCCESS;
+
 }
