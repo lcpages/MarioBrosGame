@@ -1,0 +1,24 @@
+CC = gcc
+CFLAGS = -Wall -I include
+LDFLAGS = -L lib -lmingw32 -lSDLmain -lSDL -mwindows
+EXEC= main
+SOURCE = src
+OBJET = obj
+
+SRC = $(wildcard $(SOURCE)/*.c)
+OBJS = $(patsubst $(SOURCE)%.c,$(OBJET)%.o, $(SRC))
+
+
+all: $(EXEC)
+
+main : $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+$(OBJET)/%.o : $(SOURCE)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean :
+	del -rf *.o
+
+mrproper : clean
+	del Programme.exe

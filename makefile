@@ -1,5 +1,5 @@
 CPP=gcc
-CFLAGS= -Wall
+CFLAGS= -Wall -Iinclude
 LDFLAGS= -lSDLmain -lSDL
 EXEC= main
 SOURCE = src
@@ -12,7 +12,7 @@ OBJS = $(patsubst $(SOURCE)%.c,$(OBJET)%.o, $(SRC))
 all: $(EXEC)
 
 main : $(OBJS)
-	$(CPP) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CPP) -o $@ $^ $(LDFLAGS)
 
 $(OBJET)/%.o : $(SOURCE)/%.c
 	$(CPP) $(CFLAGS) -o $@ -c $<
@@ -22,4 +22,4 @@ clean:
 	rm -f obj/*.o
 
 cleaner: clean
-	rm -fr ${EXEC}
+	rm -fr $(EXEC)

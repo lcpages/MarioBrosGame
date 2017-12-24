@@ -1,68 +1,89 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL/SDL.h>
+#include "degrade.h"
+
 
 #define SIZEX 1024
 #define SIZEY 512
-
-void pause()
-{
-    int continuer = 1;
-    SDL_Event event;
-    while (continuer)
-    {
-        SDL_WaitEvent(&event);
-        switch(event.type)
-        {
-            case SDL_QUIT:
-                continuer = 0;
-        }
-    }
-}
 
 
 int main(int argc, char *argv[])
 
 {
-    SDL_Surface * ecran = NULL;
+   SDL_Surface * ecran = NULL, * image_de_fond = NULL, * zozor = NULL;
+    SDL_Rect position_fond, position_zozor;
+    position_zozor.x = 512;
+    position_zozor.y = 256;
+    position_fond.x = 0;
+    position_fond.y = 0;
 
-    SDL_Surface * tab_ligne[SIZEY] = {NULL};
-    SDL_Rect position;
-
-    int i,j;
     SDL_Init(SDL_INIT_VIDEO);
-    if (SDL_Init(SDL_INIT_VIDEO) == -1)
-    {
-        fprintf(stderr, "Erreur d'initialisation de la SDL");
-        exit(EXIT_FAILURE);
-    }
+    SDL_WM_SetIcon(SDL_LoadBMP("pack_images_sdz/sdl_icone.bmp"), NULL);
 
-    for(i=0; i<SIZEY; i++)
-        tab_ligne[i] = SDL_CreateRGBSurface(SDL_HWSURFACE,SIZEX,1, 32,0,0,0,0);
+    ecran =SDL_SetVideoMode(SIZEX,SIZEY, 32, SDL_HWSURFACE);
+    SDL_WM_SetCaption("Affichage d'image :", NULL);
 
-    SDL_WM_SetCaption("Mon projet intitial",NULL);
-    ecran = SDL_SetVideoMode(SIZEX, SIZEY, 32, SDL_HWSURFACE);
+    image_de_fond = SDL_LoadBMP("pack_images_sdz/lac_en_montagne.bmp");
+    SDL_BlitSurface(image_de_fond,NULL, ecran, &position_fond);
 
-    Uint32 Redcolor = SDL_MapRGB(ecran->format, 0, 0, 0);
-    SDL_FillRect(ecran, NULL, Redcolor);
+    zozor =SDL_LoadBMP("pack_images_sdz/zozor.bmp");
 
+    SDL_SetColorKey(zozor, SDL_SRCCOLORKEY, SDL_MapRGB(zozor->format, 0, 0, 255));
+    SDL_BlitSurface(zozor, NULL, ecran, &position_zozor);
 
-    for(i=0; i<SIZEY; i++){
-      j = i/2;
-      position.x=0;
-      position.y = i;
-      SDL_FillRect(tab_ligne[i],NULL,SDL_MapRGB(ecran->format, j, j, j));
-      SDL_BlitSurface(tab_ligne[i], NULL, ecran, &position);
-    }
     SDL_Flip(ecran);
-
     pause();
+    SDL_FreeSurface(image_de_fond);
 
-      for(i=0;i<SIZEY; i++){
-        SDL_FreeSurface(tab_ligne[i]);
-      }
-    SDL_Quit();
+   SDL_Quit();
+
 
     return EXIT_SUCCESS;
-
 }
+/*#include <stdio.h>
+#include <SDL2/SDL.h>
+
+int main(int argc, char* argv[])
+{
+    SDL_Window *window = NULL;
+    if(0 != SDL_Init(SDL_INIT_VIDEO))
+    {
+        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError());
+        return -1;
+    }
+    window = SDL_CreateWindow("Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                              500, 500, SDL_WINDOW_SHOWN);
+    if(NULL == window)
+        fprintf(stderr, "Erreur de creation de la fenetre : %s\n", SDL_GetError());
+    else
+    {
+        SDL_Delay(500);
+        SDL_DestroyWindow(window);
+    }
+    SDL_Quit();
+    return 0;
+}
+#include <stdio.h>
+#include <SDL2/SDL.h>
+
+int main(int argc, char* argv[])
+{
+    SDL_Window *window = NULL;
+    if(0 != SDL_Init(SDL_INIT_VIDEO))
+    {
+        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError());
+        return -1;
+    }
+    window = SDL_CreateWindow("Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                              500, 500, SDL_WINDOW_SHOWN);
+    if(NULL == window)
+        fprintf(stderr, "Erreur de creation de la fenetre : %s\n", SDL_GetError());
+    else
+    {
+        SDL_Delay(500);
+        SDL_DestroyWindow(window);
+    }
+    SDL_Quit();
+    return 0;
+}*/
