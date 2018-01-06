@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -I include
-LDFLAGS = -L lib -lmingw32 -lSDLmain -lSDL -mwindows
+LDFLAGS = -L lib -lmingw32 -lSDLmain -lSDL -mwindows -lSDL_image
 EXEC= main
 SOURCE = src
 OBJET = obj

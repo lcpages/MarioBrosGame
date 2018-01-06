@@ -1,6 +1,6 @@
 CPP=gcc
-CFLAGS= -Wall -Iinclude
-LDFLAGS= -lSDLmain -lSDL
+CFLAGS= -Iinclude
+LDFLAGS=  -lSDLmain -lSDL -lSDL_image
 EXEC= main
 SOURCE = src
 OBJET = obj
