@@ -1,12 +1,109 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 #include "degrade.h"
 
 
-#define SIZEX 1024
-#define SIZEY 512
 
+
+void loadMap(int tab[nb_bloc_largeur][nb_bloc_hauteur], SDL_Surface * ecran){
+
+  int i, j;
+  SDL_Surface * index = NULL;
+  SDL_Rect position_index ;
+
+      for(j=0;j<nb_bloc_largeur;j++){
+        for(i=0; i<nb_bloc_hauteur;i++){
+
+          switch (tab[i][j]) {
+            case MUR:
+            index = IMG_Load("pack_images_sdz/mur.jpg");
+            position_index.x = i * taille_bloc;
+            position_index.y = j * taille_bloc;
+            SDL_BlitSurface(index,NULL,ecran, &position_index);
+            break;
+
+            case CAISSE:
+            index = IMG_Load("pack_images_sdz/caisse.jpg");
+            position_index.x = i * taille_bloc;
+            position_index.y = j * taille_bloc;
+            SDL_BlitSurface(index,NULL,ecran, &position_index);
+            break;
+
+            case OBJECTIF:
+            index = IMG_Load("pack_images_sdz/objectif.png");
+            position_index.x = i * taille_bloc;
+            position_index.y = j * taille_bloc;
+            SDL_BlitSurface(index,NULL,ecran, &position_index);
+            break;
+
+            case CAISSE_OK:
+            index = IMG_Load("pack_images_sdz/caisse_ok.jpg");
+            position_index.x = i * taille_bloc;
+            position_index.y = j * taille_bloc;
+            SDL_BlitSurface(index,NULL,ecran, &position_index);
+            break;
+
+        /*    case MARIO:
+            switch (move) {
+              case 0:
+              index = IMG_Load("pack_images_sdz/mario_bas.gif");
+              break;
+              case 1:
+              index = IMG_Load("pack_images_sdz/mario_haut.gif");
+              break;
+              case 2:
+              index = IMG_Load("pack_images_sdz/mario_gauche.gif");
+              break;
+              case 3:
+              index = IMG_Load("pack_images_sdz/mario_droite.gif");
+              break;
+            }
+            position_index.x = i * taille_bloc;
+            position_index.y = j * taille_bloc;
+            SDL_BlitSurface(index,NULL,ecran, &position_index);
+            break;*/
+          }
+        }
+      }
+}
+void evolue(SDL_Rect * mario_pos, int tab [nb_bloc_largeur][nb_bloc_hauteur]){
+  int i, j;
+  for(j=0;j<nb_bloc_largeur;j++){
+    for(i=0; i<nb_bloc_hauteur;i++){
+        if(tab[i][j] == MARIO){
+            mario_pos->x = i * taille_bloc;
+            mario_pos->y = j * taille_bloc;
+        }
+  }
+}}
+
+void mario_move(SDL_Rect * position, int direction, int tab[nb_bloc_largeur][nb_bloc_hauteur] ){
+
+    switch(direction){
+        case HAUT:
+          tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
+          position-> y = position-> y - taille_bloc;
+          tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
+          break;
+        case BAS:
+          tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
+          position-> y = position-> y + taille_bloc;
+          tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
+          break;
+        case GAUCHE:
+          tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
+          position-> x  = position-> x - taille_bloc;
+          tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
+          break;
+        case DROITE:
+          tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
+          position-> x  = position-> x + taille_bloc;
+          tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
+          break;
+        }
+}
 void pause()
 {
     int continuer = 1;
@@ -24,53 +121,4 @@ void pause()
                             break;
              }
     }
-}
-int degrade_color()
-{
-    SDL_Surface * ecran = NULL;
-
-    SDL_Surface * tab_ligne[SIZEY] = {NULL};
-    SDL_Rect position;
-
-    int i,j;
-    SDL_Init(SDL_INIT_VIDEO);
-    if (SDL_Init(SDL_INIT_VIDEO) == -1)
-    {
-        fprintf(stderr, "Erreur d'initialisation de la SDL");
-        exit(EXIT_FAILURE);
-    }
-
-    for(i=0; i<SIZEY; i++)
-        tab_ligne[i] = SDL_CreateRGBSurface(SDL_HWSURFACE,SIZEX,1, 32,0,0,0,0);
-
-    SDL_WM_SetCaption("Mon projet intitial",NULL);
-    ecran = SDL_SetVideoMode(SIZEX, SIZEY, 32, SDL_HWSURFACE);
-
-
-    for(i=0; i<SIZEY/2; i++){
-      j = i/2;
-      position.x=0;
-      position.y = i;
-      SDL_FillRect(tab_ligne[i],NULL,SDL_MapRGB(ecran->format,255,j, j));
-      SDL_BlitSurface(tab_ligne[i], NULL, ecran, &position);
-    }
-
-    for(i=SIZEY/2; i<SIZEY; i++){
-      j = i/2;
-      position.x=0;
-      position.y = i;
-      SDL_FillRect(tab_ligne[i],NULL,SDL_MapRGB(ecran->format,255, 255-j,255- j));
-      SDL_BlitSurface(tab_ligne[i], NULL, ecran, &position);
-    }
-    SDL_Flip(ecran);
-
-    pause();
-
-      for(i=0;i<SIZEY; i++){
-        SDL_FreeSurface(tab_ligne[i]);
-      }
-    SDL_Quit();
-
-    return EXIT_SUCCESS;
-
 }

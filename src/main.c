@@ -5,79 +5,85 @@
 #include <SDL/SDL_image.h>
 
 
-#define SIZEX 1024
-#define SIZEY 512
-
-
 int main(int argc, char *argv[])
 
 {
-      SDL_Surface * ecran = NULL, * zozor = NULL;
-      SDL_Rect position_zozor;
-      int next = 1;
+      SDL_Surface * ecran = NULL,* zozor = NULL, * mario[3] = {NULL};
+      SDL_Rect position_zozor, position_mur;
+      int next = 1, i, j;
+      int move = 0;
       SDL_Event event;
+
+      mario[0] = IMG_Load("pack_images_sdz/mario_bas.gif");
+        mario[1] = IMG_Load("pack_images_sdz/mario_haut.gif");
+          mario[2] = IMG_Load("pack_images_sdz/mario_gauche.gif");
+            mario[3] = IMG_Load("pack_images_sdz/mario_droite.gif");
+
 
 
     SDL_Init(SDL_INIT_VIDEO);
+
     SDL_WM_SetIcon(SDL_LoadBMP("pack_images_sdz/sdl_icone.bmp"), NULL);
 
-    ecran =SDL_SetVideoMode(SIZEX,SIZEY, 32, SDL_SWSURFACE | SDL_DOUBLEBUF);
-    SDL_WM_SetCaption("Affichage d'image :", NULL);
+    ecran =SDL_SetVideoMode(SIZEX,SIZEY, 32, SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_RESIZABLE);
+    SDL_WM_SetCaption("Mario Game", NULL);
 
+    zozor = mario[0];
 
-    zozor =SDL_LoadBMP("pack_images_sdz/zozor.bmp");
+    SDL_SetColorKey(zozor, SDL_SRCCOLORKEY, SDL_MapRGB(zozor->format, 255, 255, 255));
 
-    SDL_SetColorKey(zozor, SDL_SRCCOLORKEY, SDL_MapRGB(zozor->format, 0, 0, 255));
-    position_zozor.x = ecran->w / 2 - zozor->w / 2;
-    position_zozor.y = ecran->h / 2 - zozor->h / 2;
-
-    SDL_EnableKeyRepeat(10, 10);
+    SDL_EnableKeyRepeat(100, 100);
     SDL_ShowCursor(SDL_ENABLE);
+
+    int map1[nb_bloc_largeur][nb_bloc_hauteur] = {{1,1,1,0,0,1,1,1,1,1,1,1},{1,1,1,3,0,0,1,1,1,1,1,1},
+    {1,1,1,3,0,0,1,1,1,1,1,1},{1,1,1,1,0,1,1,1,1,1,1,1},
+    {1,1,0,0,0,0,0,1,3,1,1,1},{0,4,0,1,2,1,0,1,0,1,1,1},
+    {0,0,0,0,0,0,0,1,0,1,1,1},{1,0,1,1,0,0,0,1,0,1,1,1},
+    {1,0,1,1,1,0,1,1,0,1,1,1},{1,0,0,0,2,0,2,0,0,1,1,1},
+    {1,0,0,0,1,1,1,0,0,1,1,1},{1,1,1,1,1,1,1,1,1,1,1,1}};
+    loadMap(map1, ecran);
+
+
+    evolue(&position_zozor, map1);
+        printf("%d %d\n", position_zozor.x, position_zozor.y );
 
     while(next){
       SDL_WaitEvent(&event);
       switch (event.type) {
-        case SDL_QUIT:
-          next = 0;
-          break;
-        case SDL_MOUSEBUTTONUP:
-                if(event.button.button == SDL_BUTTON_RIGHT){next = 0 ;}
-                if(event.button.button == SDL_BUTTON_LEFT){
-                  position_zozor.x = event.button.x;
-                  position_zozor.y = event.button.y;
-                }
-          break;
-        /* case SDL_MOUSEMOTION:
-            position_zozor.x = event.motion.x;
-            position_zozor.y = event.motion.y;
-          break; */
-        case SDL_KEYDOWN:
-                switch(event.key.keysym.sym){
-                    case SDLK_UP:
-                      position_zozor.y--;
-                      break;
-                    case SDLK_DOWN:
-                      position_zozor.y++;
-                      break;
-                    case SDLK_LEFT:
-                      position_zozor.x--;
-                      break;
-                    case SDLK_RIGHT:
-                      position_zozor.x++;
-                      break;
-                    case SDLK_ESCAPE:
-                      next = 0;
-                      break;
-                }
-            break;
+                case SDL_QUIT:
+                  next = 0;
+                break;
+                case SDL_KEYDOWN:
+                   switch(event.key.keysym.sym){
+                        case SDLK_UP:
+                          mario_move(&position_zozor,HAUT,map1);
+                          zozor = mario[1];
+                          break;
+                        case SDLK_DOWN:
+                          mario_move(&position_zozor,BAS,map1);
+                          zozor = mario[0];
+                          break;
+                        case SDLK_LEFT:
+                          mario_move(&position_zozor,GAUCHE,map1);
+                          zozor = mario[2];
+                          break;
+                        case SDLK_RIGHT:
+                          mario_move(&position_zozor,DROITE,map1);
+                          zozor = mario[3];
+                          break;
+                        }
+
       }
-      SDL_FillRect(ecran,NULL,SDL_MapRGB(ecran->format, 0, 0, 0));
+      SDL_FillRect(ecran,NULL,SDL_MapRGB(ecran->format, 255, 255, 255));
+
+      loadMap(map1, ecran);
+      evolue(&position_zozor, map1);
       SDL_BlitSurface(zozor,NULL,ecran, &position_zozor);
       SDL_Flip(ecran);
     }
 
-  //  pause();
     SDL_FreeSurface(zozor);
+    SDL_FreeSurface(ecran);
     SDL_Quit();
 
 
