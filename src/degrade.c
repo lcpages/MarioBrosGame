@@ -1,10 +1,7 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include "degrade.h"
-
-
 
 
 void loadMap(int tab[nb_bloc_largeur][nb_bloc_hauteur], SDL_Surface * ecran){
@@ -44,26 +41,6 @@ void loadMap(int tab[nb_bloc_largeur][nb_bloc_hauteur], SDL_Surface * ecran){
             position_index.y = j * taille_bloc;
             SDL_BlitSurface(index,NULL,ecran, &position_index);
             break;
-
-        /*    case MARIO:
-            switch (move) {
-              case 0:
-              index = IMG_Load("pack_images_sdz/mario_bas.gif");
-              break;
-              case 1:
-              index = IMG_Load("pack_images_sdz/mario_haut.gif");
-              break;
-              case 2:
-              index = IMG_Load("pack_images_sdz/mario_gauche.gif");
-              break;
-              case 3:
-              index = IMG_Load("pack_images_sdz/mario_droite.gif");
-              break;
-            }
-            position_index.x = i * taille_bloc;
-            position_index.y = j * taille_bloc;
-            SDL_BlitSurface(index,NULL,ecran, &position_index);
-            break;*/
           }
         }
       }
@@ -78,30 +55,161 @@ void evolue(SDL_Rect * mario_pos, int tab [nb_bloc_largeur][nb_bloc_hauteur]){
         }
   }
 }}
+int counting( int tab [nb_bloc_largeur][nb_bloc_hauteur]){
+
+  int i, j;
+  int count = 0;
+  for(i=0;i<nb_bloc_largeur;i++){
+    for(j=0; j<nb_bloc_hauteur;j++){
+        if(tab[i][j] == OBJECTIF){
+          count = count + 1;
+        }
+      }
+    }
+    return count;
+}
 
 void mario_move(SDL_Rect * position, int direction, int tab[nb_bloc_largeur][nb_bloc_hauteur] ){
 
     switch(direction){
         case HAUT:
-          tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
-          position-> y = position-> y - taille_bloc;
-          tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
+            switch (tab[position-> x / taille_bloc][(position-> y - taille_bloc) / taille_bloc]) {
+              case VIDE:
+              tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
+              position-> y = position-> y - taille_bloc;
+              tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
+              break;
+              case CAISSE:
+              if(tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] == MUR || tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] == CAISSE ||
+              tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] == CAISSE_OK)
+                break;
+              else if(tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] == OBJECTIF){
+                tab[position-> x / taille_bloc][(position-> y - taille_bloc) / taille_bloc] = MARIO;
+                tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] = CAISSE_OK;
+                tab[position-> x / taille_bloc][(position-> y) / taille_bloc] = VIDE;
+                break;
+              } else{
+                tab[position-> x / taille_bloc][(position-> y - taille_bloc) / taille_bloc] = MARIO;
+                tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] = CAISSE;
+                tab[position-> x / taille_bloc][(position-> y) / taille_bloc] = VIDE;
+                break;
+              }
+              case CAISSE_OK:
+              if(tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] == MUR || tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] == CAISSE)
+                break;
+                else if(tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] == OBJECTIF){
+                  tab[position-> x / taille_bloc][(position-> y - taille_bloc) / taille_bloc] = OBJECTIF;
+                  tab[position-> x / taille_bloc][(position-> y - 2*taille_bloc) / taille_bloc] = CAISSE_OK;
+                  tab[position-> x / taille_bloc][(position-> y) / taille_bloc] = MARIO;
+                  break;
+                }
+              default :
+              break;
+            }
           break;
-        case BAS:
-          tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
-          position-> y = position-> y + taille_bloc;
-          tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
-          break;
-        case GAUCHE:
-          tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
-          position-> x  = position-> x - taille_bloc;
-          tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
-          break;
-        case DROITE:
-          tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
-          position-> x  = position-> x + taille_bloc;
-          tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
-          break;
+          case BAS:
+              switch (tab[position-> x / taille_bloc][(position-> y + taille_bloc) / taille_bloc]) {
+                case VIDE:
+                tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
+                position-> y = position-> y + taille_bloc;
+                tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
+                break;
+                case CAISSE:
+                if(tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] == MUR || tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] == CAISSE
+                || tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] == CAISSE_OK)
+                  break;
+                else if(tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] == OBJECTIF){
+                    tab[position-> x / taille_bloc][(position-> y + taille_bloc) / taille_bloc] = MARIO;
+                    tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] = CAISSE_OK;
+                    tab[position-> x / taille_bloc][(position-> y) / taille_bloc] = VIDE;
+                    break;
+                  }else{
+                    tab[position-> x / taille_bloc][(position-> y + taille_bloc) / taille_bloc] = MARIO;
+                    tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] = CAISSE;
+                    tab[position-> x / taille_bloc][(position-> y) / taille_bloc] = VIDE;
+                    break;}
+            case CAISSE_OK:
+                  if(tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] == MUR || tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] == CAISSE)
+                    break;
+                  else if(tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] == OBJECTIF){
+                      tab[position-> x / taille_bloc][(position-> y + taille_bloc) / taille_bloc] = OBJECTIF;
+                      tab[position-> x / taille_bloc][(position-> y + 2*taille_bloc) / taille_bloc] = CAISSE_OK;
+                      tab[position-> x / taille_bloc][(position-> y) / taille_bloc] = MARIO;
+                      break;
+                    }
+                default :
+                break;
+              }
+            break;
+          case GAUCHE:
+              switch(tab[(position-> x - taille_bloc)/ taille_bloc][(position-> y)/taille_bloc]) {
+                case VIDE:
+                tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
+                position-> x = position-> x - taille_bloc;
+                tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
+                break;
+                case CAISSE:
+                if(tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y ) / taille_bloc] == MUR || tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y) / taille_bloc] == CAISSE
+                || tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y) / taille_bloc] == CAISSE_OK)
+                  break;
+                else if(tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y ) / taille_bloc] == OBJECTIF){
+                  tab[(position-> x - taille_bloc)/ taille_bloc][(position-> y)/taille_bloc] = MARIO;
+                  tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y)/ taille_bloc] = CAISSE_OK;
+                  tab[position-> x / taille_bloc][(position-> y)/ taille_bloc] = VIDE;
+                  break;
+                } else {
+                  tab[(position-> x - taille_bloc)/ taille_bloc][(position-> y)/taille_bloc] = MARIO;
+                  tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y)/ taille_bloc] = CAISSE;
+                  tab[position-> x / taille_bloc][(position-> y)/ taille_bloc] = VIDE;
+                  break;
+                }
+                case CAISSE_OK:
+                  if(tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y ) / taille_bloc] == MUR || tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y) / taille_bloc] == CAISSE)
+                    break;
+                  else if(tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y ) / taille_bloc] == OBJECTIF){
+                    tab[(position-> x - taille_bloc)/ taille_bloc][(position-> y)/taille_bloc] = OBJECTIF;
+                    tab[(position-> x - 2*taille_bloc) / taille_bloc][(position-> y)/ taille_bloc] = CAISSE_OK;
+                    tab[position-> x / taille_bloc][(position-> y)/ taille_bloc] = MARIO;
+                      break;
+                    }
+                default :
+                break;
+              }
+            break;
+          case DROITE:
+                switch(tab[(position-> x + taille_bloc)/ taille_bloc][(position-> y)/taille_bloc]) {
+                  case VIDE:
+                  tab[position-> x / taille_bloc][position-> y / taille_bloc] = VIDE;
+                  position-> x = position-> x + taille_bloc;
+                  tab[position-> x / taille_bloc][position-> y / taille_bloc] = MARIO;
+                  break;
+                  case CAISSE:
+                  if(tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y ) / taille_bloc] == MUR || tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y) / taille_bloc] == CAISSE
+                  || tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y) / taille_bloc] == CAISSE_OK)
+                    break;
+                  else if(tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y ) / taille_bloc] == OBJECTIF){
+                      tab[(position-> x + taille_bloc)/ taille_bloc][(position-> y)/taille_bloc] = MARIO;
+                      tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y)/ taille_bloc] = CAISSE_OK;
+                      tab[position-> x / taille_bloc][(position-> y)/ taille_bloc] = VIDE;
+                        break;
+                      } else {
+                      tab[(position-> x + taille_bloc)/ taille_bloc][(position-> y)/taille_bloc] = MARIO;
+                      tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y)/ taille_bloc] = CAISSE;
+                      tab[position-> x / taille_bloc][(position-> y)/ taille_bloc] = VIDE;
+                      break; }
+                  case CAISSE_OK:
+                  if(tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y ) / taille_bloc] == MUR || tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y) / taille_bloc] == CAISSE)
+                  break;
+                  else if(tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y ) / taille_bloc] == OBJECTIF){
+                    tab[(position-> x + taille_bloc)/ taille_bloc][(position-> y)/taille_bloc] = OBJECTIF;
+                    tab[(position-> x + 2*taille_bloc) / taille_bloc][(position-> y)/ taille_bloc] = CAISSE_OK;
+                    tab[position-> x / taille_bloc][(position-> y)/ taille_bloc] = MARIO;
+                    break;
+                      }
+                  default :
+                  break;
+                }
+              break;
         }
 }
 void pause()
