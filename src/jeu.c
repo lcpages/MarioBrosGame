@@ -6,6 +6,64 @@
 #include "degrade.h"
 
 
+int chargerNiveau(int niveau[][nb_bloc_hauteur]){
+    FILE* fichier = NULL;
+    char ligneFichier[nb_bloc_largeur * nb_bloc_hauteur + 1] = {0};
+    int i = 0, j = 0;
+    fichier = fopen("include/niveaux.lvl", "r");
+    if (fichier == NULL)
+    return 0;
+
+  fgets(ligneFichier, nb_bloc_largeur * nb_bloc_hauteur + 1, fichier);
+
+  for (i = 0 ; i < nb_bloc_largeur ; i++)
+{
+    for (j = 0 ; j < nb_bloc_hauteur ; j++)
+    {
+        switch (ligneFichier[(i * nb_bloc_largeur) + j])
+        {
+            case '0':
+                niveau[j][i] = 0;
+                break;
+            case '1':
+                niveau[j][i] = 1;
+                break;
+            case '2':
+                niveau[j][i] = 2;
+                break;
+            case '3':
+                niveau[j][i] = 3;
+                break;
+            case '4':
+                niveau[j][i] = 4;
+                break;
+              }
+
+      }
+  }
+  fclose(fichier);
+  return 1;
+}
+
+
+
+int sauvegarderNiveau(int niveau[][nb_bloc_hauteur])
+{
+    FILE* fichier = NULL;
+    int i = 0, j = 0;
+    fichier = fopen("niveaux.lvl", "w");
+    if (fichier == NULL)
+        return 0;
+    for (i = 0 ; i < nb_bloc_largeur ; i++)
+    {
+        for (j = 0 ; j < nb_bloc_hauteur ; j++)
+        {
+            fprintf(fichier, "%d", niveau[j][i]);
+        }
+    }
+    fclose(fichier);
+    return 1;
+}
 
 int jeu(SDL_Surface * ecran){
 
@@ -31,12 +89,8 @@ SDL_SetColorKey(zozor, SDL_SRCCOLORKEY, SDL_MapRGB(zozor->format, 255, 255, 255)
 SDL_EnableKeyRepeat(100, 100);
 SDL_ShowCursor(SDL_ENABLE);
 
-int map1[nb_bloc_largeur][nb_bloc_hauteur] = {{1,1,1,0,0,1,1,1,1,1,1,1},{1,1,1,3,0,0,1,1,1,1,1,1},
-{1,1,1,3,0,0,1,1,1,1,1,1},{1,1,1,1,0,1,1,1,1,1,1,1},
-{1,1,0,0,0,0,0,1,3,1,1,1},{0,4,0,1,2,1,0,1,0,1,1,1},
-{0,0,0,0,0,0,0,1,0,1,1,1},{1,0,1,1,0,0,0,1,0,1,1,1},
-{1,0,1,1,1,0,1,1,0,1,1,1},{1,0,0,0,2,0,2,0,0,1,1,1},
-{1,0,0,0,1,1,1,0,0,1,1,1},{1,1,1,1,1,1,1,1,1,1,1,1}};
+int map1[nb_bloc_largeur][nb_bloc_hauteur];
+ chargerNiveau(map1);
 
 
   loadMap(map1, ecran);
