@@ -69,9 +69,8 @@ int jeu(SDL_Surface * ecran){
 
 
   SDL_Surface * zozor = NULL, * mario[3] = {NULL};
-  SDL_Rect position_zozor, position_mur;
+  SDL_Rect position_zozor, position_mario;
   int next = 1, i, j;
-  int move = 0;
   SDL_Event event;
 
   int result = 0;
@@ -83,6 +82,8 @@ int jeu(SDL_Surface * ecran){
         mario[3] = IMG_Load("pack_images_sdz/mario_droite.gif");
 
 zozor = mario[0];
+  position_mario.h = taille_bloc;
+  position_mario.w = taille_bloc;
 
 SDL_SetColorKey(zozor, SDL_SRCCOLORKEY, SDL_MapRGB(zozor->format, 255, 255, 255));
 
@@ -130,9 +131,16 @@ while(next){
                 }
       SDL_FillRect(ecran,NULL,SDL_MapRGB(ecran->format, 255, 255, 255));
 
+
       loadMap(map1, ecran);
+
+      evolue(&position_mario, map1);
+
+      SDL_FillRect(ecran,&position_mario,SDL_MapRGB(zozor->format,255,255,255));
       result =  counting( map1);
+
       evolue(&position_zozor, map1);
+      SDL_SetColorKey(zozor,SDL_SRCCOLORKEY,SDL_MapRGB(zozor->format,0,0,0));
       SDL_BlitSurface(zozor,NULL,ecran, &position_zozor);
       SDL_Flip(ecran);
       if( result == 0) next = 0;
@@ -141,4 +149,87 @@ while(next){
 SDL_FreeSurface(zozor);
 SDL_FreeSurface(ecran);
 return 1;
+}
+
+void editeur(SDL_Surface * ecran){
+
+  SDL_Rect position_zozor;
+
+  int next = 1;
+  int twice = 1;
+  SDL_Event event;
+
+  int continuer = 1, clicGaucheEnCours = 0, clicDroitEnCours = 0;
+  int objetActuel = MUR, i = 0, j = 0;
+  int carte[nb_bloc_largeur][nb_bloc_hauteur] = {0};
+
+  SDL_FillRect(ecran,NULL,SDL_MapRGB(ecran->format, 255, 255, 255));
+  loadMap(carte, ecran);
+  SDL_Flip(ecran);
+
+  while(next){
+    SDL_WaitEvent(&event);
+    switch (event.type) {
+                    case SDL_QUIT:
+                      next = 0;
+                      break;
+                    case SDL_MOUSEMOTION:
+                        if(clicGaucheEnCours == 1){
+                          if(objetActuel == MARIO ) break;
+                          carte[event.motion.x / taille_bloc][event.motion.y / taille_bloc] = objetActuel;
+                        }
+                        if(clicDroitEnCours == 1){
+                          carte[event.motion.x / taille_bloc][event.motion.y / taille_bloc] = VIDE;
+                        }
+                    break;
+                    case SDL_MOUSEBUTTONDOWN:
+                        if(event.button.button == SDL_BUTTON_LEFT){
+                            clicGaucheEnCours = 1;
+                            if(objetActuel == MARIO && twice > 1)
+                            erase_double_mario(carte);
+                            else if(objetActuel == MARIO)
+                            twice ++;
+                            carte[event.button.x / taille_bloc][event.button.y / taille_bloc] = objetActuel;
+                        }
+                        else if (event.button.button == SDL_BUTTON_RIGHT){
+                            clicDroitEnCours = 1;
+                            carte[event.button.x / taille_bloc][event.button.y / taille_bloc] = VIDE;
+                        }
+                      break;
+                    case SDL_MOUSEBUTTONUP:
+                    if(event.button.button == SDL_BUTTON_LEFT)
+                    clicGaucheEnCours = 0;
+                    else if (event.button.button == SDL_BUTTON_RIGHT){
+                    clicDroitEnCours = 0;
+                      }
+                    break;
+                    case SDL_KEYDOWN:
+                          switch (event.key.keysym.sym) {
+                          case SDLK_KP1:
+                          objetActuel = MUR;
+                              break;
+                          case SDLK_KP2:
+                          objetActuel = CAISSE;
+                              break;
+                           case SDLK_KP3:
+                           objetActuel = OBJECTIF;
+                              break;
+                            case SDLK_KP4:
+                            objetActuel = MARIO;
+                              break;
+                            case SDLK_ESCAPE:
+                              next=0;
+                              break;
+                            case SDLK_s:
+                            sauvegarderNiveau(carte);
+                              break;
+                          }
+                    break;
+                    }
+          SDL_FillRect(ecran,NULL,SDL_MapRGB(ecran->format, 255, 255, 255));
+          loadMap(carte, ecran);
+          SDL_Flip(ecran);
+        }
+
+SDL_FreeSurface(ecran);
 }

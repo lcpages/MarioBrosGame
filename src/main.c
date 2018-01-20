@@ -41,10 +41,9 @@ int main(int argc, char *argv[])
                          break;
                      case SDLK_KP1: // Demande à jouer
                           jeu(ecran);
-
                          break;
                      case SDLK_KP2: // Demande l'éditeur de niveaux
-                      //   editeur(ecran);
+                         editeur(ecran);
                          break;
                  }
                  break;

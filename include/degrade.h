@@ -20,6 +20,8 @@ void evolue(SDL_Rect * ecran, int tab [nb_bloc_largeur][nb_bloc_hauteur]);
 
 void mario_move(SDL_Rect  * position, int direction, int tab [nb_bloc_largeur][nb_bloc_hauteur]);
 
+int erase_double_mario( int tab [nb_bloc_largeur][nb_bloc_hauteur]);
+
 int counting( int tab [nb_bloc_largeur][nb_bloc_hauteur]);
 
 

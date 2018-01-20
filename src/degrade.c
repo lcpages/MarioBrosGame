@@ -35,6 +35,13 @@ void loadMap(int tab[nb_bloc_largeur][nb_bloc_hauteur], SDL_Surface * ecran){
             SDL_BlitSurface(index,NULL,ecran, &position_index);
             break;
 
+            case MARIO:
+            index = IMG_Load("pack_images_sdz/mario_bas.gif");
+            position_index.x = i * taille_bloc;
+            position_index.y = j * taille_bloc;
+            SDL_BlitSurface(index,NULL,ecran, &position_index);
+            break;
+
             case CAISSE_OK:
             index = IMG_Load("pack_images_sdz/caisse_ok.jpg");
             position_index.x = i * taille_bloc;
@@ -55,6 +62,18 @@ void evolue(SDL_Rect * mario_pos, int tab [nb_bloc_largeur][nb_bloc_hauteur]){
         }
   }
 }}
+int erase_double_mario( int tab [nb_bloc_largeur][nb_bloc_hauteur]){
+  int i, j;
+  for(i=0;i<nb_bloc_largeur;i++){
+    for(j=0; j<nb_bloc_hauteur;j++){
+        if(tab[i][j] == MARIO){
+            tab[i][j] = VIDE;
+            return 1;
+        }
+      }
+  }
+  return 0;
+}
 int counting( int tab [nb_bloc_largeur][nb_bloc_hauteur]){
 
   int i, j;

@@ -11,4 +11,5 @@ int chargerNiveau(int niveau[nb_bloc_largeur][nb_bloc_hauteur]);
 
 int sauvegarderNiveau(int niveau[nb_bloc_largeur][nb_bloc_hauteur]);
 
+void editeur(SDL_Surface * ecran);
 #endif
