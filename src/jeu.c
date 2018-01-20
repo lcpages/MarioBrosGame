@@ -108,20 +108,32 @@ while(next){
             case SDL_KEYDOWN:
                switch(event.key.keysym.sym){
                     case SDLK_UP:
+                      if(position_zozor.y == 0) break;
+                      else{
                       mario_move(&position_zozor,HAUT,map1);
                       zozor = mario[1];
+                      }
                       break;
                     case SDLK_DOWN:
+                    if(position_zozor.y == nb_bloc_hauteur * taille_bloc - taille_bloc) break;
+                    else{
                       mario_move(&position_zozor,BAS,map1);
                       zozor = mario[0];
+                    }
                       break;
                     case SDLK_LEFT:
+                    if(position_zozor.x == 0) break;
+                    else{
                       mario_move(&position_zozor,GAUCHE,map1);
                       zozor = mario[2];
+                      }
                       break;
                     case SDLK_RIGHT:
+                    if(position_zozor.x == nb_bloc_hauteur * taille_bloc - taille_bloc) break;
+                    else{
                       mario_move(&position_zozor,DROITE,map1);
                       zozor = mario[3];
+                    }
                       break;
                     case SDLK_ESCAPE:
                       next=0;
